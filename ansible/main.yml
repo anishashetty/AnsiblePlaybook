@@ -1,0 +1,27 @@
+---
+- hosts: all
+  sudo: yes
+  vars:
+    redis_version: 2.8.9
+  tasks:
+  - name: install node
+    apt: update_cache=yes name={{ item }} state=present
+    with_items:
+      - nodejs
+      - npm
+      - git
+
+  - name: clone repo
+    git: repo=https://github.com/akkaash/akkaash.github.io.git dest=/src/ clone=yes 
+
+  - name: npm install
+    npm: path=/src/
+  #
+  # - name: download redis
+  #   get_url: url=http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz dest=/tmp/
+  #
+  # - name: extract redis
+  #   command: tar zxf /tmp/redis-{{ redis_version }}.tar.gz -C /usr/local/src/
+  #
+  # - name: make redis
+  #   # command: make install --directory=/usr/local/src/redis-{{ redis_version }}
