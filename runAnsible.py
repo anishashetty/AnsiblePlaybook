@@ -18,10 +18,8 @@ proxy_port = sys.argv[3]
 
 def extract_files():
     fh = open(zipfile_path, 'rb')
-
-
     z = zipfile.ZipFile(fh)
-    path = {"sample" : "sample"}
+    path = dict()
 
     for name in z.namelist():
 
@@ -47,10 +45,14 @@ def extract_files():
 
 
 def runPlayBook(path):
-    print path
     stats = callbacks.AggregateStats()
+    inven = Inventory(host_list=path["hosts"]);
     playbook_cb = callbacks.PlaybookCallbacks(verbose=utils.VERBOSITY)
     runner_cb = callbacks.PlaybookRunnerCallbacks(stats, verbose=utils.VERBOSITY)
+    pb = PlayBook(inventory=inven,playbook=path["playbook"],stats=stats,callbacks=playbook_cb,runner_callbacks=runner_cb,)
+    pb.run()
+
+def notifyCanary():
 
     inven = Inventory(host_list=path["hosts"]);
     groups = inven.get_groups();
@@ -60,24 +62,16 @@ def runPlayBook(path):
             hosts = inven.get_hosts(group.name)
             for host in hosts:
                 host_ip = host.get_variables()['ansible_ssh_host']
-                url = 'http://'+proxy_server+':'+proxy_port
+                url = 'http://'+proxy_server+':'+proxy_port+"/canary"
                 payload = {'host': host_ip}
                 headers = {'content-type': 'application/json'}
-                # data = json.dumps(payload)
-                print payload
-                print url
-                # response = requests.post(url, data=payload, headers=headers)
-                # print host_vars['ansible_ssh_host']
-
-
-    pb = PlayBook(inventory=inven,playbook=path["playbook"],stats=stats,callbacks=playbook_cb,runner_callbacks=runner_cb,)
-    pb.run()
+                response = requests.post(url, data=payload, headers=headers)
 
 
 def main():
     path = extract_files()
-    print "yo"
     runPlayBook(path)
+    notifyCanary()
 
 if __name__ == "__main__":
     main()

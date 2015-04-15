@@ -1,2 +1,0 @@
-[sampleservers]
-server1 ansible_ssh_host=152.46.18.213 ansible_ssh_user=aashetty ansible_ssh_private_key_file=/home/anisha/.ssh/id_rsa
