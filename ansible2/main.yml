@@ -9,21 +9,13 @@
     with_items:
       - nodejs
       - npm
-  # - name: remove src if exists
-  #   file: path=/src/ state=absent
+      - git
 
-  - name: create src
-    file: path=/src state=directory
-
-  - name: unzip and copy to destination
-    unarchive: src='../pagecountapp-master.zip' dest='/src/' copy='yes'
+  - name: copy zip to destination
+    copy: src=../Queues.zip dest="/src/Queues.zip"
 
   - name: npm install
-    npm: path=/src/pagecountapp-master
-
-  - name: run main.js
-    command: node /src/pagecountapp-master/main.js
-
+    npm: path=/src/
 
   # - name: download redis
   #   get_url: url=http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz dest=/tmp/
